@@ -32,5 +32,12 @@
 .App__signup{
 	display: flex;
 	flex-direction: column;
-	
+}
+
+.App__dropDown select{
+	outline: none;
+	border: none;
+	font-size: 15px;
+	letter-spacing: 2px;
+	margin: 10px 0;
 }

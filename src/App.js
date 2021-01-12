@@ -33,8 +33,12 @@ function App() {
   const [open, setOpen] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [passOpen, setPassOpen] = useState(false);
   const [password, setPassword] = useState("");
+  const [newName, setNewName] = useState("");
   const [user, setUser] = useState(null);
+  const [openRename, setOpenRename] = useState(false);
   const [openSignIn, setOpenSignIn] = useState(false);
 
   useEffect(() => {
@@ -77,6 +81,42 @@ function App() {
 
     setOpen(false);
   };
+
+  const handleChange = (val) => {
+    if (val === "updatePassword") {
+      setPassOpen(true);
+    }
+    if (val === "rename") {
+      setOpenRename(true);
+    }
+    if (val === "logout") {
+      auth.signOut();
+    }
+  }
+
+  const updateUsername = (event) => {
+    event.preventDefault();
+    user.updateProfile({
+      displayName: newName,
+    }).then(function () {
+      alert('Username updated!');
+    }).catch(function (error) {
+      alert(error);
+    });
+    setOpenRename(false);
+    setUsername(newName);
+  }
+
+
+  const resetPassword = (event) => {
+    event.preventDefault();
+    user.updatePassword(newPassword).then(function () {
+      alert('Password Changed successfully!')
+    }).catch(function (error) {
+      alert(error);
+    });
+    setPassOpen(false);
+  }
 
   const signIn = (event) => {
     event.preventDefault();
@@ -148,6 +188,49 @@ function App() {
         </div>
       </Modal>
 
+      <Modal open={passOpen} onClose={() => setPassOpen(false)}>
+        <div style={modalStyle} className={classes.paper}>
+          <form className="App__signup">
+            <center>
+              <img
+                className="App__headerImage"
+                src="https://www.edigitalagency.com.au/wp-content/uploads/instagram-logo-text-black-png.png"
+                alt=""
+              />
+            </center>
+            <Input
+              placeholder="New Password"
+              value={newPassword}
+              type="password"
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <Button onClick={resetPassword}>Update</Button>
+          </form>
+        </div>
+      </Modal>
+
+      <Modal open={openRename} onClose={() => setOpenRename(false)}>
+        <div style={modalStyle} className={classes.paper}>
+          <form className="App__signup">
+            <center>
+              <img
+                className="App__headerImage"
+                src="https://www.edigitalagency.com.au/wp-content/uploads/instagram-logo-text-black-png.png"
+                alt=""
+              />
+            </center>
+            <Input
+              placeholder="New Username"
+              value={newName}
+              type="text"
+              onChange={(e) => setNewName(e.target.value)}
+            />
+            <Button onClick={updateUsername}>Update</Button>
+          </form>
+        </div>
+      </Modal>
+
+
       <div className="App__header">
         <img
           className="App__headerImage"
@@ -156,7 +239,15 @@ function App() {
         />
 
         {user ? (
-          <Button onClick={() => auth.signOut()}>Logout</Button>
+          <div className='App__dropDown'>
+            {/* <Button onClick={() => auth.signOut()}>{`${user.displayName}, Logout`}</Button> */}
+            <select onChange={(e) => handleChange(e.target.value)}>
+              <option value="name">Welcome, {`${user.displayName}`}</option>
+              <option value="rename"> Update username</option>
+              <option value="updatePassword">Update password</option>
+              <option value="logout">Logout</option>
+            </select>
+          </div>
         ) : (
             <div className="app__loginController">
               <Button onClick={() => setOpenSignIn(true)}>Login</Button>
